@@ -58,6 +58,8 @@
 | 8 | `pnpm test` | ✅ **24/24** | 5 arquivos; inclui teste de **isolamento RLS real** contra PostgreSQL |
 | 9 | API (`tsx server.ts`) | ✅ OK | "Chronostek API listening on port 3333" |
 | 10 | Fluxo de autenticação (HTTP real) | ✅ OK | ver seção 6 |
+| 11 | Web (`next start`, porta 3000) | ✅ OK | "Next.js 15.5.19" servindo |
+| 12 | Fluxo web (BFF + SSR) | ✅ OK | ver seção 6.1 |
 
 ### Detalhe dos testes (24/24)
 
@@ -107,6 +109,20 @@
 > **Conclusão de segurança:** permissões são validadas **no backend** (`requirePermission`), não apenas
 > ocultadas na UI. Isolamento por tenant garantido por RLS; isolamento por filial/responsável por
 > filtros em `lib/tenant.ts`.
+
+### 6.1. Camada Web (BFF + SSR) — HTTP real
+
+| Teste | Esperado | Obtido | Evidência |
+| --- | --- | --- | --- |
+| `GET /` sem sessão | redireciona a `/login` | **307 → /login** | ✅ middleware protege rotas |
+| `GET /login` | 200 | **200** | ✅ página renderiza |
+| `POST /api/auth/login` (admin) | 200 + cookie HttpOnly | **200**; `Set-Cookie chronostek_session=…; HttpOnly; SameSite=lax` | ✅ token não exposto ao browser |
+| `GET /api/v1/dashboard` (com cookie) | dados reais | clients=1, activeCases=1, **estimatedRevenue=9000.00** | ✅ BFF injeta o token e faz proxy |
+| `GET /dashboard` (com cookie) | 200 SSR | **200** | ✅ página autenticada renderiza |
+| `GET /api/v1/dashboard` (sem cookie) | 401 | **401** | ✅ BFF exige sessão |
+
+> **Pilha completa provada em clone limpo:** Browser → Next.js (SSR + BFF) → Express → PostgreSQL (RLS)
+> → dados reais. O token de sessão fica apenas no cookie HttpOnly; a UI nunca o manipula.
 
 ## 7. Estado por módulo (aderência ao MVP)
 
@@ -184,9 +200,10 @@ O que **não** foi feito pela etapa anterior (e segue pendente): a **verificaç�
 
 ## 12. Próxima prioridade técnica
 
-**P1 — Verificação vertical do MVP pela interface (web).** Subir o frontend Next.js (porta 3000) e
-percorrer os fluxos no navegador, com os usuários do seed, confirmando criação/edição/filtros e as
-negações de permissão por perfil, além da exibição visual de cores e "Vencido".
+**P1 — Verificação vertical do MVP pela interface (web).** O **caminho de dados** já está provado
+(Browser → BFF → API → DB, com dashboard real e auth no BFF — seção 6.1). Falta o **percurso visual
+de formulários** no navegador, com os usuários do seed: criação/edição/filtros em cada módulo e as
+negações de permissão por perfil, além da exibição visual de cores de prazo e do estado "Vencido".
 
 Ordem sugerida: Admin → Secretaria → Advogado → Gestor → (Financeiro: apenas estrutura).
 
@@ -225,4 +242,10 @@ pnpm dev         # web :3000 + api :3333
 ```
 
 > **Registro incremental:** este documento é atualizado a cada etapa executada (seção 8 das regras de implementação).
-> Última atualização: **2026-06-23** — auditoria executável concluída (backend validado ponta a ponta em clone limpo); próxima etapa: P1 (UI).
+>
+> - **2026-06-23 (auditoria)** — Auditoria executável concluída: backend validado ponta a ponta em clone limpo (migrations, seed, 24/24 testes, login, RBAC, cores de prazo, RLS).
+> - **2026-06-23 (P1 parcial)** — Camada web validada (BFF + SSR + cookie HttpOnly + dashboard real — seção 6.1). Pendente: percurso visual de formulários por perfil.
+>
+> **Pendência de versionamento:** o commit `5e3ce84` (SPEC + STATUS) está criado localmente, mas o
+> `git push origin main` foi **negado (403)** — a credencial disponível (`ArthurAdmin`) não tem acesso
+> de escrita ao repositório `Isaac002c/LexoraJuris`. Requer credencial com permissão de escrita.
