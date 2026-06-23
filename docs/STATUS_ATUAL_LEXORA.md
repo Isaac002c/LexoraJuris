@@ -243,6 +243,28 @@ pnpm typecheck && pnpm lint && pnpm test && pnpm build
 pnpm dev         # web :3000 + api :3333
 ```
 
+## 15. Registro de execução por Sprint
+
+> Execução sequencial das Sprints 0–8 (sem `git push` — commits locais; envio em lote quando o acesso ao GitHub for liberado).
+
+### Sprint 0 — Kickoff, auditoria e preparação · **2026-06-23**
+**Objetivo:** manter a base técnica documentada, reproduzível e segura, sem refazer trabalho.
+
+| Item | Resultado | Evidência | Status |
+| --- | --- | --- | --- |
+| Estrutura/stack/scripts | Conforme SPEC §1/§6 | Inspeção + `package.json` | Validado por API |
+| Banco + migrations | 3 migrations aplicam em banco limpo | `prisma migrate deploy` | Validado por execução |
+| Seed sob RLS | 17 usuários, 4 filiais, 7 áreas | `db:seed` + contagens | Validado por execução |
+| RLS forçado | 0 linhas sem contexto | `psql` como `chronostek_app` | Validado por execução |
+| Login/RBAC | login 200; 403/401 negados | HTTP real | Validado por API |
+| Timezone | `America/Sao_Paulo` em `format.ts` + runtime | Código + `initdb` | Validado por teste |
+| Qualidade | typecheck 6/6, lint 6/6, **test 24/24**, build OK | Execução | Validado por teste |
+| Persistência entre reinícios | Dados intactos após restart do PG | Contagens pós-restart | Validado por execução |
+
+**Sem alteração de código** (nenhuma regressão encontrada). Critério de aceite **ATINGIDO**. Próxima: Sprint 1.
+
+---
+
 > **Registro incremental:** este documento é atualizado a cada etapa executada (seção 8 das regras de implementação).
 >
 > - **2026-06-23 (auditoria)** — Auditoria executável concluída: backend validado ponta a ponta em clone limpo (migrations, seed, 24/24 testes, login, RBAC, cores de prazo, RLS).
