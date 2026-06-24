@@ -16,14 +16,23 @@ dashboardRouter.get("/", requireAuth, requirePermission("dashboard.read"), async
   const nextSevenDays = new Date(now.getTime() + 7 * 86_400_000);
   const fifteenDaysAgo = new Date(now.getTime() - 15 * 86_400_000);
 
+  // Indicadores financeiros só são calculados e retornados para quem tem `finance.read`.
+  // Assim a separação não é apenas visual: o backend não envia KPIs financeiros a perfis
+  // sem permissão (ex.: secretaria, advogado).
+  const canFinance = auth.permissions.includes("finance.read");
   const data = await withTenant(auth.tenantId, async (tx) => {
     const caseWhere: Prisma.LegalCaseWhereInput = { tenantId: auth.tenantId, ...(branchFilter ? { branchId: branchFilter } : {}), ...(filters.legalAreaId ? { legalAreaId: filters.legalAreaId } : {}), ...caseAssignmentFilter(auth) };
-    const [clients, attendances, activeCases, upcomingDeadlines, pendingDocuments, openContracts, overdueInstallments, delinquentInstallments, revenue] = await Promise.all([
+    const [clients, attendances, activeCases, upcomingDeadlines, pendingDocuments] = await Promise.all([
       tx.client.count({ where: { tenantId: auth.tenantId, status: "ACTIVE", ...(branchFilter ? { primaryBranchId: branchFilter } : {}) } }),
       tx.attendance.count({ where: { tenantId: auth.tenantId, occurredAt: { gte: monthStart }, ...(branchFilter ? { branchId: branchFilter } : {}) } }),
       tx.legalCase.count({ where: { ...caseWhere, status: { notIn: ["FINALIZADO", "ARQUIVADO"] } } }),
       tx.deadline.count({ where: { tenantId: auth.tenantId, status: { in: ["PENDING", "IN_PROGRESS"] }, dueAt: { lte: nextSevenDays }, ...(branchFilter ? { branchId: branchFilter } : {}) } }),
       tx.document.count({ where: { tenantId: auth.tenantId, status: { in: ["PENDING", "UNDER_REVIEW"] }, ...(branchFilter ? { branchId: branchFilter } : {}) } }),
+    ]);
+    if (!canFinance) {
+      return { clients, attendances, activeCases, upcomingDeadlines, pendingDocuments, openContracts: null, overdueInstallments: null, delinquentInstallments: null, estimatedRevenue: null };
+    }
+    const [openContracts, overdueInstallments, delinquentInstallments, revenue] = await Promise.all([
       tx.feeContract.count({ where: { tenantId: auth.tenantId, status: { in: ["DRAFT", "ACTIVE"] }, ...(branchFilter ? { branchId: branchFilter } : {}) } }),
       tx.paymentInstallment.count({ where: { tenantId: auth.tenantId, status: "PENDING", dueDate: { lt: now }, contract: branchFilter ? { branchId: branchFilter } : undefined } }),
       tx.paymentInstallment.count({ where: { tenantId: auth.tenantId, status: "PENDING", dueDate: { lt: fifteenDaysAgo }, contract: branchFilter ? { branchId: branchFilter } : undefined } }),
