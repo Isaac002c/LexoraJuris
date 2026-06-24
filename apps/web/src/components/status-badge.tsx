@@ -2,7 +2,7 @@ import { Badge } from "./ui/badge";
 
 const danger = ["VENCIDO", "DARK_RED", "RECUSADO", "REJECTED"];
 const warning = ["AGUARDANDO_DOCUMENTOS", "AGUARDANDO_CONTRATO", "AGUARDANDO_PAGAMENTO", "YELLOW", "PENDING", "PENDENTE", "A_VENCER"];
-const success = ["ACTIVE", "PAGO", "PAID", "COMPLETED", "FINALIZADO", "RECEBIDO", "ANALISADO", "GREEN", "APPROVED"];
+const success = ["ACTIVE", "PAGO", "PAID", "COMPLETED", "FINALIZADO", "RECEBIDO", "ANALISADO", "GREEN", "APPROVED", "EM_DIA"];
 const orange = ["INADIMPLENTE_15_DIAS"];
 
 // Rótulos legíveis em PT-BR para os códigos técnicos exibidos nos badges.
