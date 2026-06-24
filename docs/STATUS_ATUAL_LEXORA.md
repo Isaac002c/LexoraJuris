@@ -508,6 +508,22 @@ separados entre código × infraestrutura × decisão humana; STATUS reflete ape
 **Arquivos alterados:** `next.config.ts`, `contracts/domain.ts`, `deadlines.routes.ts`, `finance.routes.ts`, `query-hardening.test.ts`.
 **Classificação final:** **Pronto para implantação condicionado à infraestrutura** (nenhuma vuln crítica aberta).
 
+### Sprint 11 — Lapidação operacional, UX e usabilidade · **2026-06-24**
+**Objetivo:** deixar o sistema confortável para uso diário, com correções mínimas e baseadas em evidência (sem redesign).
+
+| Item | Achado | Correção | Evidência | Status |
+| --- | --- | --- | --- | --- |
+| Dashboard × permissão | Cards financeiros apareciam para perfis sem `finance.read` e linkavam a `/financeiro` → **403 ao clicar** | Cards filtrados por permissão; **backend deixa de enviar KPIs financeiros** a quem não tem `finance.read` (não é filtro visual); destinos de cards corrigidos | API (Advogado: `openContracts=null`) + HTML (Secretaria sem cards financeiros; Admin com todos) | ✅ Corrigido (`f35f7d6`) |
+| Marca do produto | UI exibia "CHRONOSTEK" (fornecedor) | Texto de marca → **"LEXORA"** (produto, conforme SPEC) no login, sidebar e título | curl: título "Lexora …", marca LEXORA | ✅ Corrigido (`4ff0be5`) |
+| Estados vazios | Mensagem genérica não distinguia "sem cadastro" de "sem resultado de filtro" | Mensagens contextuais em clientes/processos/atendimentos | `/clientes?status=INACTIVE` → "…com os filtros aplicados" | ✅ Corrigido (`4c28baf`) |
+
+**Validação por perfil (UX):** Admin (todos os cards + Honorários), Secretaria (só cards operacionais; menu sem
+Financeiro/Relatórios/Administração; troca de senha E2E), Advogado/Financeiro/Gestor/Visualizador (RBAC mantido).
+**Qualidade:** typecheck ✅ · lint ✅ · test ✅ · build ✅ (sem regressão).
+**Arquivos:** `dashboard.routes.ts`, `dashboard/page.tsx`, `layout.tsx`, `login/page.tsx`, `app-shell.tsx`, `clientes/processos/atendimentos/page.tsx`.
+**Pendente de validação do escritório:** preferências finais de terminologia/marca (assumido "Lexora" conforme SPEC).
+**Critério de aceite Sprint 11:** **ATINGIDO** (navegação coerente por perfil, sem links que levam a erro; marca consistente; estados vazios úteis). Sem alteração de RLS/RBAC/sessão além do reforço do dashboard.
+
 ---
 
 > **Registro incremental:** este documento é atualizado a cada etapa executada (seção 8 das regras de implementação).
