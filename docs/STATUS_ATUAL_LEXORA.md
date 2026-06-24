@@ -395,6 +395,33 @@ pnpm dev         # web :3000 + api :3333
 **Arquivos alterados:** nenhum (já implementado). **Build/testes:** sem alteração — 24/24 ✅.
 **Critério de aceite Sprint 5:** **ATINGIDO** (visão consolidada, filtros, dados reais batendo com listagens, relatórios restritos por perfil, estados coerentes). Próxima: Sprint 6.
 
+### Sprint 6 — Auditoria, segurança e backup · **2026-06-23**
+**Objetivo:** rastreabilidade, segurança operacional e procedimento de backup/recuperação.
+
+**Auditoria e segurança (validado por execução):**
+
+| Item | Resultado | Status |
+| --- | --- | --- |
+| Trilha de auditoria | 33 eventos (AUTH_LOGIN, CLIENT_CREATED, CONTRACT_CREATED, DEADLINE_CREATED, PAYMENT_RECORDED, COLLECTION_NOTE_ADDED) com **ator, ação, entidade, data, IP, user agent** | Validado por API |
+| Auditoria restrita | Admin `GET /admin/audit` **200**; Advogado **403** (sem `audit.read`) | Validado por API |
+| Sem segredos em log | `audit_logs` não tem coluna de senha/token | Validado por banco |
+| Credenciais protegidas | `sessions.token_hash` (sem token em claro); `users.password_hash` (argon2, sem senha em claro); `clients.tax_id_encrypted` (CPF cifrado) | Validado por banco |
+| RLS forçado | 0 linhas sem contexto de tenant | Validado por banco (Sprint 0) |
+| Rotas protegidas | 401 sem token / 403 sem permissão em todos os módulos | Validado por API |
+
+**Backup e recuperação (procedimento testado):**
+
+| Item | Resultado | Status |
+| --- | --- | --- |
+| `pg_dump` (custom) | Dump gerado (~137 KB) | ✅ testado |
+| `pg_restore` em DB de teste | exit 0; contagens conferem (users=17, audit=31, contracts=2) | ✅ testado |
+| Script de backup | `scripts/backup-db.ps1` (timestamp + retenção) — gerou dump de 133,6 KB | ✅ testado |
+| Runbook | `docs/RUNBOOK_BACKUP_E_RECUPERACAO.md` (backup, restore, verificação, segurança) | Criado |
+| Backup automatizado de produção | Agendamento/retenção/storage seguro | 🟧 **pendente de infraestrutura/produção** |
+
+**Arquivos criados:** `docs/RUNBOOK_BACKUP_E_RECUPERACAO.md`, `scripts/backup-db.ps1` (commit `^`).
+**Critério de aceite Sprint 6:** **ATINGIDO** para auditoria/segurança/procedimento de backup; **backup de produção permanece pendente de infraestrutura** (não declarado como configurado). Próxima: Sprint 7.
+
 ---
 
 > **Registro incremental:** este documento é atualizado a cada etapa executada (seção 8 das regras de implementação).
