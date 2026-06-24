@@ -44,6 +44,15 @@
 | Rotação de segredos e política de senhas | P2 | — |
 | Teste de restauração periódico documentado | P1 | Mensal, ambiente isolado |
 
+## 4.1 Segurança — backlog da auditoria (Sprint 10)
+
+| Item | Prioridade | Observação |
+| --- | --- | --- |
+| CSP estrita no web (`script-src`/`style-src` com nonce) | P2 | Hoje só `frame-ancestors`; nonce exige integração no Next |
+| Validação de conteúdo de upload (magic bytes) + antivírus | P2 | Hoje allowlist por MIME declarado + `attachment` + `nosniff` |
+| Lockout temporário por conta após N falhas | P2 | Complementa o rate limit por IP já existente |
+| Validação de sessão no edge (middleware) | P3 | UX; boundary real já é a API |
+
 ## 5. Qualidade contínua
 
 | Item | Prioridade | Observação |

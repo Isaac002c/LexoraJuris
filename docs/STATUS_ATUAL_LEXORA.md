@@ -477,6 +477,37 @@ configuração de infraestrutura de produção e credenciais. **Go-live de produ
 **Critério de aceite Sprint 8:** **ATINGIDO** (revisão geral, checklists, backlog, riscos e pendências
 separados entre código × infraestrutura × decisão humana; STATUS reflete apenas o comprovado).
 
+### Sprint 10 — Auditoria de cibersegurança, finalização e validação por perfil · **2026-06-24**
+**Objetivo:** auditar segurança real (local), corrigir achados comprovados e validar operação por perfil.
+
+**Auditoria (escopo local) — nenhuma vuln crítica/alta; ver `docs/AUDITORIA_CIBERSEGURANCA_LEXORA.md`:**
+
+| Sprint | Item | Resultado | Evidência | Status |
+| --- | --- | --- | --- | --- |
+| 10 | Headers de segurança no web | Adicionados (X-Frame-Options/nosniff/Referrer/Permissions/CSP) | HTTP em `/login` | Corrigido (`6285dbb`) |
+| 10 | Validação de query (enum/data vazios) | Endurecida no backend | `query-hardening.test.ts` + HTTP | Corrigido (`e96f4d6`) |
+| 10 | RBAC/RLS/IDOR/BOLA | Negações 403/401 + isolamento de filial (404) | API real | Validado por API |
+| 10 | Auth (enumeração/rate limit/headers) | Sem enumeração; rate limit 10/15min; headers helmet | HTTP | Validado por API |
+| 10 | Uploads / SQL / XSS / segredos | Allowlist+attachment; sem raw SQL; sem HTML perigoso; sem segredo rastreado | Inspeção + busca | Validado |
+
+**Validação por perfil (RBAC + bloqueios reais):**
+
+| Perfil | Fluxo | Tela/Rota | Ação | Resultado | Evidência | Status |
+| --- | --- | --- | --- | --- | --- | --- |
+| Admin | Acesso total | `/dashboard`,`/admin/*` | Operar/consultar | 200; auditoria 200 | visual+API | ✅ |
+| Secretaria | Troca de senha 1º acesso | `/alterar-senha`→`/dashboard` | Definir senha | Acessa; menu sem Financeiro/Relatórios/Administração | visual | ✅ |
+| Secretaria | Bloqueio admin/finance | `/admin/*`,`/finance/*` | Tentar | **403**; cliente de outra filial **404** | API | ✅ |
+| Advogado | 1º acesso | `/login`→`/alterar-senha` | Login | Forçado a trocar; `/admin` **403** | visual+API | ✅ |
+| Gestor | Escopo de filial | `/reports/summary` | Consultar | Vê só a própria filial | API | ✅ |
+| Financeiro | Operação financeira | `/finance/*` | Contrato/pagamento | 200; `/deadlines`,`/cases` POST **403** | API | ✅ |
+| Visualizador | Somente leitura | `/clients` | Criar | **403** | API | ✅ |
+
+**Regras de prazo/financeiro (timezone America/Sao_Paulo):** verde >7 / amarelo 6-7 / vermelho ≤5 /
+**Vencido**; financeiro verde em dia / amarelo a vencer / vermelho vencido / laranja +15d — **validadas**.
+**Qualidade após correções:** typecheck ✅ · lint ✅ · **test 34/34** ✅ · build ✅.
+**Arquivos alterados:** `next.config.ts`, `contracts/domain.ts`, `deadlines.routes.ts`, `finance.routes.ts`, `query-hardening.test.ts`.
+**Classificação final:** **Pronto para implantação condicionado à infraestrutura** (nenhuma vuln crítica aberta).
+
 ---
 
 > **Registro incremental:** este documento é atualizado a cada etapa executada (seção 8 das regras de implementação).

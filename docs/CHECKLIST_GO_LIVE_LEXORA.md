@@ -35,6 +35,11 @@
 | --- | --- |
 | Senhas em argon2; tokens em SHA-256; CPF cifrado | ✅ |
 | Permissões validadas no backend (403/401) | ✅ |
+| Auditoria de cibersegurança (escopo local) — sem vuln crítica/alta | ✅ (`docs/AUDITORIA_CIBERSEGURANCA_LEXORA.md`) |
+| Headers de segurança no web (anti-clickjacking) | ✅ |
+| Validação de query endurecida (enum/data vazios) + teste | ✅ |
+| Sem enumeração de usuário; rate limit no login | ✅ |
+| Isolamento por filial (IDOR/BOLA) | ✅ (testado: 404) |
 | `SESSION_SECRET` e `FIELD_ENCRYPTION_KEY` **reais** (não os de exemplo) | 🟧 gerar na implantação |
 | `COOKIE_SECURE=true` em produção (HTTPS) | 🟧 definir no `.env` de produção |
 | TLS/HTTPS no domínio de produção | 🟧 pendente de infraestrutura |
