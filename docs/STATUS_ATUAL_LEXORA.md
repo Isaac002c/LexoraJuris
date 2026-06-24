@@ -422,6 +422,23 @@ pnpm dev         # web :3000 + api :3333
 **Arquivos criados:** `docs/RUNBOOK_BACKUP_E_RECUPERACAO.md`, `scripts/backup-db.ps1` (commit `^`).
 **Critério de aceite Sprint 6:** **ATINGIDO** para auditoria/segurança/procedimento de backup; **backup de produção permanece pendente de infraestrutura** (não declarado como configurado). Próxima: Sprint 7.
 
+### Sprint 7 — Treinamento e operação assistida · **2026-06-23**
+**Objetivo:** materiais que habilitam o uso por perfil, sem prometer ausências nem fingir treinamento.
+
+| Item | Resultado | Status |
+| --- | --- | --- |
+| Guia rápido por perfil | `docs/GUIA_RAPIDO_LEXORA.md` (Admin, Secretaria, Advogado, Gestor, Financeiro) | Criado |
+| Fluxos recomendados + como-fazer | Cadastrar cliente/atendimento/processo/prazo/documento/contrato/parcela; acompanhar inadimplência | Documentado |
+| Regras de prazo e cores | Tabela alinhada ao comportamento real validado | Documentado |
+| FAQ + limites conhecidos | Inclui audiência como tipo de prazo e integrações fora do MVP | Documentado |
+| Checklist de treinamento | Tabela por usuário (login/senha/fluxo/dúvidas/data/treinado por) | Criado |
+| Canal de suporte | Marcado como **a definir pelo escritório** | 🟧 pendente de decisão |
+
+**Princípio aplicado:** o guia descreve **apenas funcionalidades reais e validadas**; diferencia
+**"material pronto"** de **"usuário treinado"** (treinamento humano real ainda **não realizado**).
+**Arquivos criados:** `docs/GUIA_RAPIDO_LEXORA.md`.
+**Critério de aceite Sprint 7:** **ATINGIDO** (guia por perfil alinhado ao sistema real, sem promessas; checklist de treinamento; suporte marcado como pendente de definição). Próxima: Sprint 8.
+
 ---
 
 > **Registro incremental:** este documento é atualizado a cada etapa executada (seção 8 das regras de implementação).
