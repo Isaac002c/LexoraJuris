@@ -327,6 +327,29 @@ pnpm dev         # web :3000 + api :3333
 **Resultados:** `build` web ✅ (37 páginas); testes API 24/24 ✅. **Bugs corrigidos:** 1 (legibilidade de status).
 **Pendências:** nenhuma crítica. **Critério de aceite Sprint 2:** **ATINGIDO** (fluxos sem falha crítica; filtros/validações/mensagens/estados vazios operacionais). Próxima: Sprint 3.
 
+### Sprint 3 — Contratos, honorários e parcelamentos · **2026-06-23**
+**Objetivo:** validar/finalizar a base financeira (contratos, honorários, custas, parcelas, pagamento). O módulo **já estava implementado** (`finance.routes.ts`); o trabalho foi validar por execução e corrigir um defeito.
+
+**Validação por execução (API real):**
+
+| Item | Ação | Resultado | Status |
+| --- | --- | --- | --- |
+| Criar contrato | `POST /finance/contracts` (R$12.000 + R$600, 4 parcelas, vínculo cliente+processo) | 201; 4 parcelas de R$3.150 (soma 12.600), vencimentos mensais, aging correto | Validado por API |
+| Registrar pagamento | `POST /installments/:id/pay` | Parcela #1 → PAGO, `paidAt`, responsável registrado | Validado por API |
+| Resumo financeiro | `GET /finance/summary` | Contratado R$21.000, ativos 2, recebido/mês R$3.150, custas R$1.100 (agregações reais) | Validado por API |
+| Permissão (Secretaria) | `GET`/`POST /finance/contracts` | **403/403** (sem `finance.read`/`finance.update`) | Validado por API |
+| Permissão (Financeiro) | `GET /finance/contracts` | **200** (tem `finance.read`) | Validado por API |
+
+**Bug encontrado e corrigido (operacional):**
+
+| Bug | Causa | Correção | Evidência |
+| --- | --- | --- | --- |
+| Páginas **Contratos**, **Comprovantes** e **Parcelas (aba "Todas")** quebravam com erro de Server Components | `FinanceContractsTable` enviava `view=""` → API responde **422** (enum) → `fetchData` lança no SSR | Omitir parâmetros vazios da query (commit `a8a91d1`) | UI antes: "Algo não saiu como esperado"; depois: 7 parcelas renderizadas |
+
+**Validação visual (pós-correção):** `/financeiro/contratos` lista 7 parcelas com cliente/parcela, filial, valor, vencimento, forma (PIX), aging ("Pago", "Em dia", "Inadimplente +15 dias") e ação "Registrar pagamento".
+**Arquivos alterados:** `finance-contracts-table.tsx` (+4/-1). **Build** web ✅; testes API 24/24 ✅.
+**Critério de aceite Sprint 3:** **ATINGIDO** (contrato↔cliente/processo, honorários+custas, parcelas com valor/venc/status, pagamento/baixa, histórico via audit, filtros, permissões financeiro/admin). Próxima: Sprint 4.
+
 ---
 
 > **Registro incremental:** este documento é atualizado a cada etapa executada (seção 8 das regras de implementação).
