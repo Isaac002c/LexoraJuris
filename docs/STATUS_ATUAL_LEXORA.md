@@ -439,6 +439,44 @@ pnpm dev         # web :3000 + api :3333
 **Arquivos criados:** `docs/GUIA_RAPIDO_LEXORA.md`.
 **Critério de aceite Sprint 7:** **ATINGIDO** (guia por perfil alinhado ao sistema real, sem promessas; checklist de treinamento; suporte marcado como pendente de definição). Próxima: Sprint 8.
 
+### Sprint 8 — Consolidação e prontidão de go-live · **2026-06-23**
+**Objetivo:** consolidar a versão e formalizar a prontidão, sem declarar go-live de produção (sem infra/credenciais).
+
+**Revisão geral de qualidade (re-executada após todas as sprints):**
+
+| Item | Resultado |
+| --- | --- |
+| `pnpm typecheck` | ✅ 6/6 |
+| `pnpm lint` | ✅ 6/6 (schema válido) |
+| `pnpm test` | ✅ 24/24 |
+| `pnpm build` | ✅ web (37 rotas) + API |
+
+**Entregáveis:**
+
+| Item | Arquivo | Status |
+| --- | --- | --- |
+| Checklist de produção/go-live | `docs/CHECKLIST_GO_LIVE_LEXORA.md` | Criado |
+| Backlog pós-go-live | `docs/BACKLOG_POS_GO_LIVE.md` | Criado |
+| Runbook de backup | `docs/RUNBOOK_BACKUP_E_RECUPERACAO.md` | Criado (Sprint 6) |
+| Guia por perfil | `docs/GUIA_RAPIDO_LEXORA.md` | Criado (Sprint 7) |
+
+**Prontidão final (declaração honesta):**
+
+| Dimensão | Situação |
+| --- | --- |
+| Código do MVP | ✅ **Pronto** (typecheck/lint/test/build verdes; sem bug crítico aberto) |
+| Banco/migrations/seed/RLS | ✅ **Pronto** (testado em clone limpo) |
+| Fluxos do MVP (5 perfis) | ✅ **Validados** (UI + API + permissões) |
+| Backup/recuperação | ✅ Procedimento **testado** · 🟧 automação de produção pendente |
+| Repositório (push) | 🟧 **pendente de acesso de escrita** (commits locais prontos) |
+| Produção (infra/segredos/TLS/deploy/backup agendado) | 🟧 **pendente de infraestrutura e credenciais** |
+| Treinamento humano | 🟦 material pronto; treinamento **não realizado** |
+
+**Conclusão:** **MVP pronto para homologação local e pronto para implantação, condicionado** à
+configuração de infraestrutura de produção e credenciais. **Go-live de produção NÃO declarado concluído.**
+**Critério de aceite Sprint 8:** **ATINGIDO** (revisão geral, checklists, backlog, riscos e pendências
+separados entre código × infraestrutura × decisão humana; STATUS reflete apenas o comprovado).
+
 ---
 
 > **Registro incremental:** este documento é atualizado a cada etapa executada (seção 8 das regras de implementação).
