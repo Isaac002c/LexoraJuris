@@ -296,6 +296,37 @@ pnpm dev         # web :3000 + api :3333
 **Dados:** criado 1 prazo vencido de teste no **banco local** (descartável, não versionado) para evidenciar "Vencido"; produção recebe seed limpo.
 **Critério de aceite Sprint 1:** **ATINGIDO** para Admin/Secretaria/Advogado/cores-de-prazo/RBAC; Gestor e percurso visual de formulários de processo ficam para reforço na Sprint 2. Próxima: Sprint 2.
 
+### Sprint 2 — Estabilização e ajustes do uso real · **2026-06-23**
+**Objetivo:** eliminar atritos dos fluxos reais sem redesign.
+
+**Diagnóstico (o que já existia — não refeito):**
+
+| Item | Achado | Status |
+| --- | --- | --- |
+| Estados vazios | `DataTable` já mostra "Nenhum registro encontrado." com ícone | Funcional |
+| Paginação | Componente `Pagination` presente nas listas | Funcional |
+| Filtros/busca | ModuleNav + selects (filial/área/responsável/status) + `SearchForm` | Funcional |
+| Mensagens de erro | `CreatePanel` exibe `detail/title` da API em box vermelho | Funcional |
+| Validação | Zod no backend + `required` no frontend | Funcional |
+
+**Correção implementada (atrito real):**
+
+| Item | Antes | Depois | Evidência | Status |
+| --- | --- | --- | --- | --- |
+| Status técnicos em inglês nos badges | `ACTIVE`, `PENDING`, `RECEIVED`, `UNDER_REVIEW`, `APPROVED`, `DRAFT`, `PAID` | `Ativo`, `Pendente`, `Recebido`, `Em análise`, `Aprovado`, `Rascunho`, `Pago` | `status-badge.tsx` (commit `0e940ec`) | Validado visualmente |
+
+**Validação visual (preview, build de produção):**
+
+| Tela/Rota | Verificação | Resultado | Status |
+| --- | --- | --- | --- |
+| `/clientes` | Status do cliente | "Ativo" (PT) | Validado visualmente |
+| `/prazos` | Situação do prazo | "Pendente" + "Vencido"/"Crítico" (PT) | Validado visualmente |
+| `/clientes?status=INACTIVE` | Filtro + estado vazio | 0 linhas, "Nenhum registro encontrado." | Validado visualmente |
+
+**Arquivos alterados:** `apps/web/src/components/status-badge.tsx` (display-only; lógica de cor intacta).
+**Resultados:** `build` web ✅ (37 páginas); testes API 24/24 ✅. **Bugs corrigidos:** 1 (legibilidade de status).
+**Pendências:** nenhuma crítica. **Critério de aceite Sprint 2:** **ATINGIDO** (fluxos sem falha crítica; filtros/validações/mensagens/estados vazios operacionais). Próxima: Sprint 3.
+
 ---
 
 > **Registro incremental:** este documento é atualizado a cada etapa executada (seção 8 das regras de implementação).
