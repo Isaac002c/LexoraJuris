@@ -263,6 +263,39 @@ pnpm dev         # web :3000 + api :3333
 
 **Sem alteração de código** (nenhuma regressão encontrada). Critério de aceite **ATINGIDO**. Próxima: Sprint 1.
 
+### Sprint 1 — MVP operacional e validação visual · **2026-06-23**
+**Objetivo:** validar os fluxos essenciais do MVP no navegador (preview em `:3100` consumindo a API `:3333`), por perfil, e corrigir o necessário.
+
+**Validação visual por fluxo/perfil** (navegador real, build de produção):
+
+| Fluxo | Perfil | Tela/Rota | Ação | Resultado | Evidência | Status |
+| --- | --- | --- | --- | --- | --- | --- |
+| Login | Admin | `/login` | Autenticar | Redireciona a `/dashboard` | snapshot + screenshot | Validado visualmente |
+| Painel | Admin | `/dashboard` | Ver indicadores | Dados reais (Clientes 2, Proc. 1, Honorários R$ 9.000) + filtros filial/área | screenshot | Validado visualmente |
+| Prazos | Admin | `/prazos` | Listar/cores | "Crítico" (4 dias) e **"Vencido"** (vencido) com cor vermelha; views e filtros presentes | eval DOM + código `Badge` | Validado visualmente |
+| Acesso | Admin | sidebar | Navegação | 11 módulos visíveis (todas as permissões) | snapshot | Validado visualmente |
+| 1º acesso | Advogado | `/login`→`/alterar-senha` | Login | Forçado a trocar senha ("Proteja sua conta", 3 campos) | eval DOM | Validado visualmente |
+| RBAC menu | não-admin | sidebar | Filtragem | Menu filtrado por permissão (`app-shell.tsx:30`) | código + API 403 | Validado por código+API |
+| Intake | Secretaria | `/api/v1/clients` (BFF) | Criar cliente | **201** + read-back (2 clientes) | HTTP real | Validado por API |
+| RBAC backend | Secretaria | `/api/v1/admin/branches` | Criar filial | **403** negado | HTTP real | Validado por API |
+| Estrutura | Financeiro | `/financeiro/*` | Conferir | Páginas existem (contratos/parcelas/inadimplência/comprovantes) + rotas `finance/*` | build + código | Estrutura presente (pós-MVP) |
+
+**Correção implementada (apenas o necessário):**
+
+| Item | Resultado | Evidência | Status |
+| --- | --- | --- | --- |
+| Indicador de prazo mostrava código cru (`RED`/`DARK_RED`) | Agora exibe rótulo PT: No prazo/Atenção/Crítico/**Vencido**/Encerrado | `status-badge.tsx` (commit `df5472f`) | Funcional |
+| Cores de prazo (`>7` verde · `6–7` amarelo · `≤5` vermelho · vencido) | Mantidas e corretas | `deadline.ts` + 7 testes + variantes `Badge` | Validado por teste+visual |
+
+**Arquivos alterados:** `apps/web/src/components/status-badge.tsx` (1 arquivo, +13/-1).
+**Rotas/perfis testados:** Admin (visual), Advogado (visual 1º acesso), Secretaria (API/BFF), RBAC (visual+API).
+**Resultados:** `pnpm --filter @chronostek/web build` ✅; testes API 24/24 ✅ (sem regressão).
+**Bugs encontrados:** rótulo de prazo em inglês (corrigido). **Bugs corrigidos:** 1.
+**Pendências (Sprint 2):** localizar enums de status em PT (PENDING→Pendente etc.) nos badges; validar visualmente criação de processo/atendimento e filtros do Gestor pela UI.
+**Riscos:** screenshots do preview instáveis (timeout) — validação feita por snapshot/eval/inspeção, que são preferidos para texto/estado.
+**Dados:** criado 1 prazo vencido de teste no **banco local** (descartável, não versionado) para evidenciar "Vencido"; produção recebe seed limpo.
+**Critério de aceite Sprint 1:** **ATINGIDO** para Admin/Secretaria/Advogado/cores-de-prazo/RBAC; Gestor e percurso visual de formulários de processo ficam para reforço na Sprint 2. Próxima: Sprint 2.
+
 ---
 
 > **Registro incremental:** este documento é atualizado a cada etapa executada (seção 8 das regras de implementação).
